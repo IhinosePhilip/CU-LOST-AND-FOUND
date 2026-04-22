@@ -6,6 +6,22 @@ const path = require('path');
 
 dotenv.config();
 
+// Startup check
+console.log('🔄 Starting CU Lost & Found server...');
+console.log('📦 NODE_ENV:', process.env.NODE_ENV);
+console.log('🔗 MONGODB_URI set:', !!process.env.MONGODB_URI);
+console.log('🔑 JWT_SECRET set:', !!process.env.JWT_SECRET);
+
+if (!process.env.MONGODB_URI) {
+  console.error('❌ MONGODB_URI is not set. Check your environment variables on Render.');
+  process.exit(1);
+}
+
+if (!process.env.JWT_SECRET) {
+  console.error('❌ JWT_SECRET is not set. Check your environment variables on Render.');
+  process.exit(1);
+}
+
 const app = express();
 
 // Middleware

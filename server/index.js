@@ -6,6 +6,18 @@ const path = require('path');
 
 dotenv.config();
 
+// Catch any uncaught errors
+process.on('uncaughtException', (err) => {
+  console.error('💥 Uncaught Exception:', err.message);
+  console.error(err.stack);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason) => {
+  console.error('💥 Unhandled Rejection:', reason);
+  process.exit(1);
+});
+
 // Startup check
 console.log('🔄 Starting CU Lost & Found server...');
 console.log('📦 NODE_ENV:', process.env.NODE_ENV);
@@ -55,7 +67,10 @@ app.use((err, req, res, next) => {
 });
 
 // Connect to MongoDB then start server
-mongoose.connect(process.env.MONGODB_URI)
+mongoose.connect(process.env.MONGODB_URI, {
+  serverSelectionTimeoutMS: 10000,
+  connectTimeoutMS: 10000
+})
   .then(async () => {
     console.log('✅ Connected to MongoDB');
 
@@ -85,6 +100,7 @@ mongoose.connect(process.env.MONGODB_URI)
   })
   .catch((err) => {
     console.error('❌ MongoDB connection error:', err.message);
+    console.error('Full error:', JSON.stringify(err, null, 2));
     process.exit(1);
   });
 
